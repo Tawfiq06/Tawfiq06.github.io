@@ -17,12 +17,8 @@
 <body>
 
 <header class="topbar">
-  <a class="brand" href="#top">
-    <span class="brand-mark">TS</span><span class="brand-dot">.</span>
-  </a>
-  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
-    <span></span><span></span><span></span>
-  </button>
+  <a class="brand" href="#top"><span class="brand-mark">TS</span><span class="brand-dot">.</span></a>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button>
   <nav class="nav" id="siteNav">
     <a href="#skills">SKILLS</a>
     <a href="#projects">PROJECTS</a>
@@ -60,22 +56,10 @@
   <section id="skills" class="section">
     <div class="section-head"><span class="tag">§01</span><h2>Skills</h2><span class="section-line"></span></div>
     <div class="spec-table">
-      <div class="spec-row">
-        <div class="spec-key">Languages</div>
-        <div class="spec-val">C · C++ · Python · Java · JavaScript · HTML · RISC-V Assembly</div>
-      </div>
-      <div class="spec-row">
-        <div class="spec-key">Hardware &amp; Embedded</div>
-        <div class="spec-val">Verilog · FPGA Design · Microcontrollers · Digital Logic · FSMs · I²C · UART</div>
-      </div>
-      <div class="spec-row">
-        <div class="spec-key">Tools &amp; Software</div>
-        <div class="spec-val">Git · GitLab CI/CD · Linux · AWS (EC2, S3) · Docker · Django · Heroku · Altium Designer · Quartus Prime · ModelSim · LTSpice · Arduino · Raspberry Pi · OpenCV · MediaPipe</div>
-      </div>
-      <div class="spec-row">
-        <div class="spec-key">Applied</div>
-        <div class="spec-val">Problem Solving · Leadership · Technical Communication · Team Collaboration</div>
-      </div>
+      <div class="spec-row"><div class="spec-key">Languages</div><div class="spec-val">C · C++ · Python · Java · JavaScript · HTML · RISC-V Assembly</div></div>
+      <div class="spec-row"><div class="spec-key">Hardware &amp; Embedded</div><div class="spec-val">Verilog · FPGA Design · Microcontrollers · Digital Logic · FSMs · I²C · UART</div></div>
+      <div class="spec-row"><div class="spec-key">Tools &amp; Software</div><div class="spec-val">Git · GitLab CI/CD · Linux · AWS (EC2, S3) · Docker · Django · Heroku · Altium Designer · Quartus Prime · ModelSim · LTSpice · Arduino · Raspberry Pi · OpenCV · MediaPipe</div></div>
+      <div class="spec-row"><div class="spec-key">Applied</div><div class="spec-val">Problem Solving · Leadership · Technical Communication · Team Collaboration</div></div>
     </div>
   </section>
 
@@ -87,11 +71,8 @@
 
       <!-- FLRTRX — interactive radio dial -->
       <article class="card card-feature">
-        <div>
-          <div class="card-head">
-            <h3>Flexible Radio Transceiver</h3>
-            <span class="card-date">Jan – Apr 2026</span>
-          </div>
+        <div id="dialTextCol" class="card-text">
+          <div class="card-head"><h3>Flexible Radio Transceiver</h3><span class="card-date">Jan – Apr 2026</span></div>
           <p class="card-sub">Local oscillator + embedded control · PCB in Altium</p>
           <p class="card-desc">Led design of a radio subsystem's local oscillator, embedded control, and UI — breadboard through Altium PCB to firmware.</p>
           <ul class="card-bullets">
@@ -99,19 +80,18 @@
             <li>Diagnosed cascading MCU failures across boards; built a Python simulator to decouple firmware dev from hardware</li>
           </ul>
           <div class="card-tags"><span>ATmega324PB</span><span>Si5351 PLL</span><span>Altium PCB</span><span>Most Resilient Team</span></div>
-          <div class="card-links">
-            <a href="https://www.linkedin.com/posts/tawfiqshnoudeh_engineering-embeddedsystems-pcbdesign-ugcPost-7458143651936911361-uhhE/" target="_blank" rel="noopener">Write-up ↗</a>
-          </div>
+          <div class="card-links"><a href="https://www.linkedin.com/posts/tawfiqshnoudeh_engineering-embeddedsystems-pcbdesign-ugcPost-7458143651936911361-uhhE/" target="_blank" rel="noopener">Write-up ↗</a></div>
+          <!-- Add project photos here: <div class="proj-gallery"><img src="assets/flrtrx-1.jpg" alt=""></div> -->
+          <div class="proj-gallery"></div>
         </div>
-        <div class="stage-box">
+        <div id="dialStageWrap" class="stage-box dial-compact">
+          <button class="expand-btn" id="dialExpand" aria-label="Expand">⤢</button>
           <div class="dial-wrap">
             <svg id="dialSvg" viewBox="0 0 200 200" role="img" aria-label="Interactive frequency tuning dial"></svg>
             <div class="oled">
               <span id="freqOut">07.100</span>
               <div style="display:flex; align-items:center; gap:8px;">
-                <div class="dial-bars" id="dialBars">
-                  <span></span><span></span><span></span><span></span><span></span>
-                </div>
+                <div class="dial-bars" id="dialBars"><span></span><span></span><span></span><span></span><span></span></div>
                 <span class="lock" id="lockOut">LOCK</span>
               </div>
             </div>
@@ -122,11 +102,8 @@
 
       <!-- Quadcopter — flyable drone -->
       <article class="card card-feature">
-        <div>
-          <div class="card-head">
-            <h3>Gesture-Controlled Quadcopter Sim</h3>
-            <span class="card-date">Feb – Mar 2026</span>
-          </div>
+        <div id="droneTextCol" class="card-text">
+          <div class="card-head"><h3>Gesture-Controlled Quadcopter Sim</h3><span class="card-date">Feb – Mar 2026</span></div>
           <p class="card-sub">ML gesture classification + custom flight physics engine</p>
           <p class="card-desc">Hand-gesture classification model on MediaPipe landmarks, wired into a real-time FSM-based drone command pipeline with OpenCV.</p>
           <ul class="card-bullets">
@@ -134,21 +111,25 @@
             <li>Self-curated gesture dataset trained end-to-end for live inference</li>
           </ul>
           <div class="card-tags"><span>MediaPipe</span><span>OpenCV</span><span>C++ / Python</span><span>FSM</span></div>
+          <div class="proj-gallery"></div>
         </div>
-        <div class="stage-box">
+        <div id="droneStageWrap" class="stage-box">
+          <button class="expand-btn" id="droneExpand" aria-label="Expand">⤢</button>
           <canvas id="droneStage"></canvas>
-          <p class="drone-controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or arrows to fly · <kbd>space</kbd>/<kbd>shift</kbd> up/down</p>
+          <p class="drone-controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> fly · <kbd>space</kbd>/<kbd>shift</kbd> up/down</p>
+          <div class="hand-panel">
+            <button id="handToggle" class="btn-small">🖐 Enable hand control</button>
+            <video id="handVideo" width="72" height="54" muted playsinline></video>
+            <span id="handStatus" class="hand-status"></span>
+          </div>
           <p class="card-caption">a browser interactive inspired by the project — the original never got a visual layer, this one's new</p>
         </div>
       </article>
 
       <!-- Mini Paint — canvas tribute -->
       <article class="card card-feature">
-        <div>
-          <div class="card-head">
-            <h3>Mini Paint</h3>
-            <span class="card-date">Nov – Dec 2025</span>
-          </div>
+        <div id="paintTextCol" class="card-text">
+          <div class="card-head"><h3>Mini Paint</h3><span class="card-date">Nov – Dec 2025</span></div>
           <p class="card-sub">MS Paint, rebuilt entirely in Verilog on an FPGA</p>
           <p class="card-desc">Real-time drawing, erasing, and shape tools in Verilog on a DE1-SoC FPGA, rendered on a 640×480 9-bit color VGA monitor.</p>
           <ul class="card-bullets">
@@ -156,46 +137,54 @@
             <li>PS/2 mouse and board-switch input for dual-mode canvas/UI control</li>
           </ul>
           <div class="card-tags"><span>Verilog</span><span>FPGA</span><span>VGA</span><span>PS/2</span></div>
-          <div class="card-links">
-            <a href="https://www.linkedin.com/posts/tawfiqshnoudeh_fpga-verilog-digitaldesign-ugcPost-7401279747852328960-0WbA/" target="_blank" rel="noopener">Write-up ↗</a>
-          </div>
+          <div class="card-links"><a href="https://www.linkedin.com/posts/tawfiqshnoudeh_fpga-verilog-digitaldesign-ugcPost-7401279747852328960-0WbA/" target="_blank" rel="noopener">Write-up ↗</a></div>
+          <div class="proj-gallery"></div>
         </div>
-        <div class="stage-box">
+        <div id="paintStageWrap" class="stage-box">
+          <button class="expand-btn" id="paintExpand" aria-label="Expand">⤢</button>
           <div class="paint-toolbar">
             <button class="swatch active" data-color="#1B1A17" style="background:#1B1A17" aria-label="Ink"></button>
             <button class="swatch" data-color="#C1440E" style="background:#C1440E" aria-label="Accent"></button>
-            <button class="paint-clear" id="paintClear">CLEAR</button>
+            <button class="paint-tool" id="paintErase">ERASE</button>
+            <button class="paint-tool" id="paintClear">CLEAR</button>
           </div>
           <canvas id="paintCanvas" width="300" height="180"></canvas>
           <p class="card-caption">draw here — a browser tribute; the original runs on an FPGA driving VGA over a PS/2 mouse</p>
         </div>
       </article>
 
-      <!-- Adaptive Arena Fighter -->
-      <article class="card">
-        <div class="card-head">
-          <h3>Adaptive Arena Fighter</h3>
-          <span class="card-date">Mar – Apr 2026</span>
+      <!-- Adaptive Arena Fighter — sprite widget -->
+      <article class="card card-feature">
+        <div id="fighterTextCol" class="card-text">
+          <div class="card-head"><h3>Adaptive Arena Fighter</h3><span class="card-date">Mar – Apr 2026</span></div>
+          <p class="card-sub">Bare-metal fighting game on a NIOS V / RISC-V FPGA</p>
+          <p class="card-desc">Real-time top-down fighting game in C on a NIOS V/RISC-V soft processor on the DE1-SoC — no OS, no engine.</p>
+          <ul class="card-bullets">
+            <li>Custom VGA pipeline: 60 FPS, double buffering, sprite layering, interrupt-driven audio</li>
+            <li>RL opponent trained with PPO in Python, deployed as a C inference model</li>
+          </ul>
+          <div class="card-tags"><span>C</span><span>NIOS V</span><span>VGA Pipeline</span><span>PPO / RL</span></div>
+          <div class="card-links">
+            <a href="https://github.com/Tawfiq06/Adaptive-Arena-Fighter" target="_blank" rel="noopener">Repository ↗</a>
+            <a href="https://www.linkedin.com/posts/tawfiqshnoudeh_ece243-de1soc-embeddedsystems-ugcPost-7455620678164045825-x0x_/" target="_blank" rel="noopener">Write-up ↗</a>
+          </div>
+          <div class="proj-gallery"></div>
         </div>
-        <p class="card-sub">Bare-metal fighting game on a NIOS V / RISC-V FPGA</p>
-        <p class="card-desc">Real-time top-down fighting game in C on a NIOS V/RISC-V soft processor on the DE1-SoC — no OS, no engine.</p>
-        <ul class="card-bullets">
-          <li>Custom VGA pipeline: 60 FPS, double buffering, sprite layering, interrupt-driven audio</li>
-          <li>RL opponent trained with PPO in Python, deployed as a C inference model</li>
-        </ul>
-        <div class="card-tags"><span>C</span><span>NIOS V</span><span>VGA Pipeline</span><span>PPO / RL</span></div>
-        <div class="card-links">
-          <a href="https://github.com/Tawfiq06/Adaptive-Arena-Fighter" target="_blank" rel="noopener">Repository ↗</a>
-          <a href="https://www.linkedin.com/posts/tawfiqshnoudeh_ece243-de1soc-embeddedsystems-ugcPost-7455620678164045825-x0x_/" target="_blank" rel="noopener">Write-up ↗</a>
+        <div id="fighterStageWrap" class="stage-box">
+          <button class="expand-btn" id="fighterExpand" aria-label="Expand">⤢</button>
+          <canvas id="fighterStage" width="224" height="168"></canvas>
+          <div class="fighter-controls">
+            <button data-action="attack">Attack</button>
+            <button data-action="shoot">Shoot</button>
+          </div>
+          <p class="card-caption">sprite sourced online, not original art — row mapping is a best guess, flag anything that looks wrong</p>
         </div>
       </article>
 
       <!-- UTRA -->
       <article class="card">
-        <div class="card-head">
-          <h3>Autonomous Robot Car + AI Debugger</h3>
-          <span class="card-date">Feb 2026 · UTRA</span>
-        </div>
+        <button class="expand-btn" aria-label="Expand">⤢</button>
+        <div class="card-head"><h3>Autonomous Robot Car + AI Debugger</h3><span class="card-date">Feb 2026 · UTRA</span></div>
         <p class="card-sub">Obstacle-course robot with an LLM debugging co-pilot</p>
         <p class="card-desc">Mini autonomous robot car in C++ navigating an obstacle course under strict hardware constraints.</p>
         <ul class="card-bullets">
@@ -203,17 +192,14 @@
           <li>Diagnosed power stability, sensor noise, and wiring faults live</li>
         </ul>
         <div class="card-tags"><span>C++</span><span>Sensors / Motors</span><span>Gemini API</span></div>
-        <div class="card-links">
-          <a href="https://www.linkedin.com/feed/update/urn:li:activity:7423861712594055168/" target="_blank" rel="noopener">Write-up ↗</a>
-        </div>
+        <div class="card-links"><a href="https://www.linkedin.com/feed/update/urn:li:activity:7423861712594055168/" target="_blank" rel="noopener">Write-up ↗</a></div>
+        <div class="proj-gallery"></div>
       </article>
 
       <!-- Tune Our Love -->
       <article class="card">
-        <div class="card-head">
-          <h3>Tune Our Love</h3>
-          <span class="card-date">Feb 2026 · MakeUofT</span>
-        </div>
+        <button class="expand-btn" aria-label="Expand">⤢</button>
+        <div class="card-head"><h3>Tune Our Love</h3><span class="card-date">Feb 2026 · MakeUofT</span></div>
         <p class="card-sub">Song-recognition hardware that reveals a hidden ring</p>
         <p class="card-desc">Arduino + Raspberry Pi song-recognition system using audio fingerprinting.</p>
         <ul class="card-bullets">
@@ -221,9 +207,8 @@
           <li>A match triggers a servo that reveals a hidden ring</li>
         </ul>
         <div class="card-tags"><span>Arduino</span><span>Raspberry Pi</span><span>I²C</span></div>
-        <div class="card-links">
-          <a href="https://www.linkedin.com/posts/tawfiqshnoudeh_hackathon-embeddedsystems-arduino-activity-7432186317469286400-TukG" target="_blank" rel="noopener">Write-up ↗</a>
-        </div>
+        <div class="card-links"><a href="https://www.linkedin.com/posts/tawfiqshnoudeh_hackathon-embeddedsystems-arduino-activity-7432186317469286400-TukG" target="_blank" rel="noopener">Write-up ↗</a></div>
+        <div class="proj-gallery"></div>
       </article>
 
     </div>
@@ -233,9 +218,8 @@
   <section id="experience" class="section">
     <div class="section-head"><span class="tag">§03</span><h2>Experience</h2><span class="section-line"></span></div>
 
-    <!-- UTUX — 3D wireframe ROV -->
-    <div class="exp-feature">
-      <div>
+    <div class="exp-card has-visual">
+      <div class="exp-text">
         <div class="exp-head"><h3>Electrical Lead</h3></div>
         <p class="exp-org">University of Toronto Underwater Exploration (UTUX)</p>
         <p class="exp-date">Sept 2025 — Present</p>
@@ -245,38 +229,36 @@
           <li>Redesigning the electrical harness and producing complete schematics in Altium Designer, coordinating with mechanical and software teams for vehicle integration.</li>
         </ul>
       </div>
-      <div class="stage-box">
+      <div id="rovStageWrap" class="stage-box">
+        <button class="expand-btn" id="rovExpand" aria-label="Expand">⤢</button>
         <canvas id="rovStage"></canvas>
         <p class="stage-hint">drag to rotate</p>
       </div>
     </div>
 
-    <div class="timeline">
-      <div class="tl-entry">
-        <div class="tl-tick"></div>
-        <div class="tl-date">May 2026 — Aug 2026</div>
-        <div class="tl-body">
-          <h3>Student Research</h3>
-          <p class="tl-org">UofT Dept. of Electrical &amp; Computer Engineering</p>
-          <ul>
-            <li>Built a full-stack Django application used by medical researchers to optimize Photodynamic Therapy (PDT) simulations, integrating AWS EC2, S3, and Docker via boto3/Paramiko with automated Heroku deployment via GitLab CI/CD.</li>
-            <li>Engineered multi-step simulation workflows (FullMonte, PDT-SPACE, MeshTool) with session state management, dynamic Django formsets, and real-time AJAX lookups for clinical treatment planning.</li>
-            <li>Resolved cross-stack runtime issues across Docker/EC2 executions, backend job scripts, and JavaScript-based interactive visualizations (mpld3).</li>
-          </ul>
-        </div>
+    <div class="exp-card">
+      <div class="exp-text">
+        <div class="exp-head"><h3>Student Research</h3></div>
+        <p class="exp-org">UofT Dept. of Electrical &amp; Computer Engineering</p>
+        <p class="exp-date">May 2026 — Aug 2026</p>
+        <ul>
+          <li>Built a full-stack Django application used by medical researchers to optimize Photodynamic Therapy (PDT) simulations, integrating AWS EC2, S3, and Docker via boto3/Paramiko with automated Heroku deployment via GitLab CI/CD.</li>
+          <li>Engineered multi-step simulation workflows (FullMonte, PDT-SPACE, MeshTool) with session state management, dynamic Django formsets, and real-time AJAX lookups for clinical treatment planning.</li>
+          <li>Resolved cross-stack runtime issues across Docker/EC2 executions, backend job scripts, and JavaScript-based interactive visualizations (mpld3).</li>
+        </ul>
       </div>
-      <div class="tl-entry">
-        <div class="tl-tick"></div>
-        <div class="tl-date">Sept 2024 — Apr 2025</div>
-        <div class="tl-body">
-          <h3>Electrical General Member</h3>
-          <p class="tl-org">University of Toronto Super Mileage</p>
-          <ul>
-            <li>Built a speedometer using a magnetic proximity sensor with an Arduino UNO to calculate wheel RPM.</li>
-            <li>Drove a 16×2 display projected onto a transparent surface in front of the driver, creating a heads-up display effect.</li>
-            <li>Implemented speed-dependent LED control logic for real-time visual feedback to the driver.</li>
-          </ul>
-        </div>
+    </div>
+
+    <div class="exp-card">
+      <div class="exp-text">
+        <div class="exp-head"><h3>Electrical General Member</h3></div>
+        <p class="exp-org">University of Toronto Super Mileage</p>
+        <p class="exp-date">Sept 2024 — Apr 2025</p>
+        <ul>
+          <li>Built a speedometer using a magnetic proximity sensor with an Arduino UNO to calculate wheel RPM.</li>
+          <li>Drove a 16×2 display projected onto a transparent surface in front of the driver, creating a heads-up display effect.</li>
+          <li>Implemented speed-dependent LED control logic for real-time visual feedback to the driver.</li>
+        </ul>
       </div>
     </div>
   </section>
@@ -289,9 +271,7 @@
         <h3>Bachelor of Applied Science and Engineering</h3>
         <p class="edu-org">University of Toronto — Electrical Engineering, PEY Co-op</p>
         <p class="edu-meta">Sept 2024 — Apr 2028 · Toronto, Ontario</p>
-        <ul>
-          <li>Pursuing a Robotics Minor. Coursework: Digital Systems, Computer Hardware, Operating Systems, Algorithms &amp; Data Structures.</li>
-        </ul>
+        <ul><li>Pursuing a Robotics Minor. Coursework: Digital Systems, Computer Hardware, Operating Systems, Algorithms &amp; Data Structures.</li></ul>
       </div>
       <div class="edu-stats">
         <div class="stat"><span class="stat-num">3.92</span><span class="stat-label">CGPA</span></div>
@@ -305,15 +285,9 @@
     <div class="section-head"><span class="tag">§05</span><h2>Contact</h2><span class="section-line"></span></div>
     <p class="contact-intro">Open to co-op, internship, and collaboration opportunities in embedded systems and hardware engineering.</p>
     <div class="pin-grid">
-      <a class="pin" href="mailto:Tawfiqshnoudeh06@gmail.com">
-        <span class="pin-label">EMAIL</span><span class="pin-value">Tawfiqshnoudeh06@gmail.com</span>
-      </a>
-      <a class="pin" href="https://github.com/Tawfiq06" target="_blank" rel="noopener">
-        <span class="pin-label">GITHUB</span><span class="pin-value">github.com/Tawfiq06</span>
-      </a>
-      <a class="pin" href="https://www.linkedin.com/in/tawfiqshnoudeh/" target="_blank" rel="noopener">
-        <span class="pin-label">LINKEDIN</span><span class="pin-value">/in/tawfiqshnoudeh</span>
-      </a>
+      <a class="pin" href="mailto:Tawfiqshnoudeh06@gmail.com"><span class="pin-label">EMAIL</span><span class="pin-value">Tawfiqshnoudeh06@gmail.com</span></a>
+      <a class="pin" href="https://github.com/Tawfiq06" target="_blank" rel="noopener"><span class="pin-label">GITHUB</span><span class="pin-value">github.com/Tawfiq06</span></a>
+      <a class="pin" href="https://www.linkedin.com/in/tawfiqshnoudeh/" target="_blank" rel="noopener"><span class="pin-label">LINKEDIN</span><span class="pin-value">/in/tawfiqshnoudeh</span></a>
     </div>
   </section>
 
@@ -323,6 +297,14 @@
   <span>© <span id="year"></span> Tawfiq Shnoudeh</span>
   <span>TORONTO, ON</span>
 </footer>
+
+<!-- Fullscreen modal -->
+<div class="modal-overlay" id="modalOverlay" hidden>
+  <div class="modal-panel">
+    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="script.js"></script>
