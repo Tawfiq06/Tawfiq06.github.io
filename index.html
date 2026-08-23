@@ -78,11 +78,17 @@
           <ul class="card-bullets">
             <li>ATmega324PB firmware drives a Si5351 PLL for tunable LO frequency, with OLED + rotary encoder UI</li>
             <li>Diagnosed cascading MCU failures across boards; built a Python simulator to decouple firmware dev from hardware</li>
+            <li>Recognized with the Most Resilient Team award</li>
           </ul>
           <div class="card-tags"><span>ATmega324PB</span><span>Si5351 PLL</span><span>Altium PCB</span><span>Most Resilient Team</span></div>
           <div class="card-links"><a href="https://www.linkedin.com/posts/tawfiqshnoudeh_engineering-embeddedsystems-pcbdesign-ugcPost-7458143651936911361-uhhE/" target="_blank" rel="noopener">Write-up ↗</a></div>
-          <!-- Add project photos here: <div class="proj-gallery"><img src="assets/flrtrx-1.jpg" alt=""></div> -->
-          <div class="proj-gallery"></div>
+          <!-- Add project photos here:  -->
+          <div class="proj-gallery">
+            <img src="assets/flrtrx_1.jpg" alt=""> 
+            <img src="assets/flrtrx_3.jpg" alt="">
+            <img src="assets/flrtrx_4.jpg" alt="">
+            <img src="assets/flrtrx_2.jpg" alt="">
+          </div>
         </div>
         <div id="dialStageWrap" class="stage-box dial-compact">
           <button class="expand-btn" id="dialExpand" aria-label="Expand">⤢</button>
@@ -97,6 +103,34 @@
             </div>
           </div>
           <p class="card-caption">drag the dial — PLL: Si5351 · MCU: ATmega324PB</p>
+        </div>
+      </article>
+
+      <!-- Adaptive Arena Fighter — sprite widget -->
+      <article class="card card-feature">
+        <div id="fighterTextCol" class="card-text">
+          <div class="card-head"><h3>Adaptive Arena Fighter</h3><span class="card-date">Mar – Apr 2026</span></div>
+          <p class="card-sub">Bare-metal fighting game on a NIOS V / RISC-V FPGA</p>
+          <p class="card-desc">Real-time top-down fighting game in C on a NIOS V/RISC-V soft processor on the DE1-SoC — no OS, no engine.</p>
+          <ul class="card-bullets">
+            <li>Custom VGA pipeline: 60 FPS, double buffering, sprite layering, interrupt-driven audio</li>
+            <li>RL opponent trained with PPO in Python, deployed as a C inference model</li>
+          </ul>
+          <div class="card-tags"><span>C</span><span>NIOS V</span><span>VGA Pipeline</span><span>PPO / RL</span></div>
+          <div class="card-links">
+            <a href="https://github.com/Tawfiq06/Adaptive-Arena-Fighter" target="_blank" rel="noopener">Repository ↗</a>
+            <a href="https://www.linkedin.com/posts/tawfiqshnoudeh_ece243-de1soc-embeddedsystems-ugcPost-7455620678164045825-x0x_/" target="_blank" rel="noopener">Write-up ↗</a>
+          </div>
+          <div class="proj-gallery"></div>
+        </div>
+        <div id="fighterStageWrap" class="stage-box">
+          <button class="expand-btn" id="fighterExpand" aria-label="Expand">⤢</button>
+          <canvas id="fighterStage" width="224" height="168"></canvas>
+          <div class="fighter-controls">
+            <button data-action="attack">Attack</button>
+            <button data-action="shoot">Shoot</button>
+          </div>
+          <p class="card-caption">sprite sourced online, not original art — row mapping is a best guess, flag anything that looks wrong</p>
         </div>
       </article>
 
@@ -138,8 +172,13 @@
           </ul>
           <div class="card-tags"><span>Verilog</span><span>FPGA</span><span>VGA</span><span>PS/2</span></div>
           <div class="card-links"><a href="https://www.linkedin.com/posts/tawfiqshnoudeh_fpga-verilog-digitaldesign-ugcPost-7401279747852328960-0WbA/" target="_blank" rel="noopener">Write-up ↗</a></div>
-          <div class="proj-gallery"></div>
+          <div class="proj-gallery">
+            <img src="assets/mini_paint_1.jpeg" alt=""> 
+            <img src="assets/mini_paint_2.jpg" alt="">
+            <img src="assets/mini_paint_3.jpg" alt="">
+          </div>
         </div>
+        
         <div id="paintStageWrap" class="stage-box">
           <button class="expand-btn" id="paintExpand" aria-label="Expand">⤢</button>
           <div class="paint-toolbar">
@@ -150,34 +189,6 @@
           </div>
           <canvas id="paintCanvas" width="300" height="180"></canvas>
           <p class="card-caption">draw here — a browser tribute; the original runs on an FPGA driving VGA over a PS/2 mouse</p>
-        </div>
-      </article>
-
-      <!-- Adaptive Arena Fighter — sprite widget -->
-      <article class="card card-feature">
-        <div id="fighterTextCol" class="card-text">
-          <div class="card-head"><h3>Adaptive Arena Fighter</h3><span class="card-date">Mar – Apr 2026</span></div>
-          <p class="card-sub">Bare-metal fighting game on a NIOS V / RISC-V FPGA</p>
-          <p class="card-desc">Real-time top-down fighting game in C on a NIOS V/RISC-V soft processor on the DE1-SoC — no OS, no engine.</p>
-          <ul class="card-bullets">
-            <li>Custom VGA pipeline: 60 FPS, double buffering, sprite layering, interrupt-driven audio</li>
-            <li>RL opponent trained with PPO in Python, deployed as a C inference model</li>
-          </ul>
-          <div class="card-tags"><span>C</span><span>NIOS V</span><span>VGA Pipeline</span><span>PPO / RL</span></div>
-          <div class="card-links">
-            <a href="https://github.com/Tawfiq06/Adaptive-Arena-Fighter" target="_blank" rel="noopener">Repository ↗</a>
-            <a href="https://www.linkedin.com/posts/tawfiqshnoudeh_ece243-de1soc-embeddedsystems-ugcPost-7455620678164045825-x0x_/" target="_blank" rel="noopener">Write-up ↗</a>
-          </div>
-          <div class="proj-gallery"></div>
-        </div>
-        <div id="fighterStageWrap" class="stage-box">
-          <button class="expand-btn" id="fighterExpand" aria-label="Expand">⤢</button>
-          <canvas id="fighterStage" width="224" height="168"></canvas>
-          <div class="fighter-controls">
-            <button data-action="attack">Attack</button>
-            <button data-action="shoot">Shoot</button>
-          </div>
-          <p class="card-caption">sprite sourced online, not original art — row mapping is a best guess, flag anything that looks wrong</p>
         </div>
       </article>
 

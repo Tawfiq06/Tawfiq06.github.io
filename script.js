@@ -202,41 +202,148 @@ function enableDragOrbit(canvas, group, idleX){
 })();
 
 // ============================================================
-// EXPERIENCE — wireframe ROV
+// EXPERIENCE — wireframe ROV (single centered propeller per corner thruster)
 // ============================================================
 (function rov(){
   const canvas = document.getElementById('rovStage');
   if (!canvas) return;
   const stage = makeStage(canvas);
-  stage.camera.position.set(0, 1.2, 6.5);
+  stage.camera.position.set(3.8, 3.2, 5.6);
   stage.camera.lookAt(0, 0, 0);
   const g = stage.group;
   const lineColor = 0x1B1A17, accent = 0xC1440E;
 
-  const hull = edgeMesh(new THREE.CylinderGeometry(0.75, 0.75, 2.6, 16), lineColor);
-  hull.rotation.z = Math.PI / 2; g.add(hull);
-
-  const nose = edgeMesh(new THREE.ConeGeometry(0.75, 0.6, 16), accent);
-  nose.rotation.z = -Math.PI / 2; nose.position.x = 1.6; g.add(nose);
-
-  for (let i = 0; i < 4; i++){
-    const angle = (i / 4) * Math.PI * 2;
-    const pod = edgeMesh(new THREE.TorusGeometry(0.32, 0.07, 6, 14), lineColor);
-    pod.position.set(-1.2, Math.sin(angle) * 0.95, Math.cos(angle) * 0.95);
-    pod.rotation.y = Math.PI / 2; g.add(pod);
-    const strut = edgeMesh(new THREE.BoxGeometry(0.6, 0.05, 0.05), lineColor);
-    strut.position.set(-0.9, Math.sin(angle) * 0.55, Math.cos(angle) * 0.55);
-    strut.rotation.z = angle; g.add(strut);
+  function smoothEdges(geometry, color, thresholdAngle = 25){
+    const edges = new THREE.EdgesGeometry(geometry, thresholdAngle);
+    return new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color }));
   }
-  const camHousing = edgeMesh(new THREE.BoxGeometry(0.4, 0.3, 0.4), accent);
-  camHousing.position.set(0.5, 0.75, 0); g.add(camHousing);
 
-  g.rotation.x = 0.28; g.rotation.y = 0.7;
+  const propellers = [];
+
+  function makePropeller({ radius, hubLen, bladeLen, bladeChord, bladeThick }){
+    const spinGroup = new THREE.Group();
+
+    const hub = edgeMesh(new THREE.ConeGeometry(radius * 0.28, hubLen, 6), accent);
+    hub.rotation.x = Math.PI / 2;
+    spinGroup.add(hub);
+
+    for (let b = 0; b < 3; b++){
+      const blade = edgeMesh(new THREE.BoxGeometry(bladeChord, bladeLen, bladeThick), lineColor);
+      blade.position.y = radius * 0.35 + bladeLen / 2;
+      const bladeWrap = new THREE.Group();
+      bladeWrap.add(blade);
+      bladeWrap.rotation.z = (b / 3) * Math.PI * 2;
+      spinGroup.add(bladeWrap);
+    }
+
+    propellers.push(spinGroup);
+    return spinGroup;
+  }
+
+  // ---- chassis dimensions ----
+  const W = 3.0, D = 3.0, H = 0.7, r = 0.42;
+
+  const waistX = edgeMesh(new THREE.BoxGeometry(W - 2*r, H, D), lineColor);
+  g.add(waistX);
+  const waistZ = edgeMesh(new THREE.BoxGeometry(W, H, D - 2*r), lineColor);
+  g.add(waistZ);
+
+  const cornerSigns = [[1,1],[1,-1],[-1,1],[-1,-1]];
+  const cornerX = W/2 - r, cornerZ = D/2 - r;
+  const CORNER_SEGS = 32;
+  cornerSigns.forEach(([sx, sz]) => {
+    const colGeo = new THREE.CylinderGeometry(r, r, H, CORNER_SEGS);
+    const col = smoothEdges(colGeo, lineColor, 25);
+    col.position.set(sx * cornerX, 0, sz * cornerZ);
+    g.add(col);
+  });
+
+  // ---- central electronics tube ----
+  const tubeR = H * 0.45, tubeLen = W;
+  const tube = edgeMesh(new THREE.CylinderGeometry(tubeR, tubeR, tubeLen, 20, 1, true), lineColor);
+  tube.rotation.z = Math.PI / 2;
+  g.add(tube);
+  const dome = edgeMesh(new THREE.SphereGeometry(tubeR * 0.9, 14, 10, 0, Math.PI*2, 0, Math.PI/2), accent);
+  dome.rotation.z = Math.PI / 2;
+  dome.position.x = tubeLen / 2;
+  g.add(dome);
+  const rearRim = edgeMesh(new THREE.TorusGeometry(tubeR, 0.015, 6, 18), lineColor);
+  rearRim.rotation.y = Math.PI / 2;
+  rearRim.position.x = -tubeLen / 2;
+  g.add(rearRim);
+
+  // ---- 4 flush top/bottom ducted thrusters ----
+  const ductR = 0.3;
+  const ductPositions = [
+    [ W*0.20,  D*0.30],
+    [ W*0.20, -D*0.30],
+    [-W*0.20,  D*0.30],
+    [-W*0.20, -D*0.30],
+  ];
+  ductPositions.forEach(([x, z]) => {
+    const tunnel = edgeMesh(new THREE.CylinderGeometry(ductR, ductR, H + 0.02, 18), lineColor);
+    tunnel.position.set(x, 0, z);
+    g.add(tunnel);
+    [H/2, -H/2].forEach(y => {
+      const rim = edgeMesh(new THREE.TorusGeometry(ductR, 0.02, 6, 18), lineColor);
+      rim.rotation.x = Math.PI / 2;
+      rim.position.set(x, y, z);
+      g.add(rim);
+    });
+
+    const orient = new THREE.Group();
+    orient.rotation.x = -Math.PI / 2;
+    orient.position.set(x, 0, z);
+    const prop = makePropeller({
+      radius: ductR, hubLen: H * 0.5,
+      bladeLen: ductR * 0.9, bladeChord: 0.05, bladeThick: 0.012
+    });
+    orient.add(prop);
+    g.add(orient);
+  });
+
+  // ---- 4 corner thrusters, flush against rounded corners — single centered propeller ----
+  cornerSigns.forEach(([sx, sz]) => {
+    const radialAngle = Math.atan2(sz, sx);
+
+    const strutPivot = new THREE.Object3D();
+    strutPivot.position.set(sx * cornerX, -H * 0.15, sz * cornerZ);
+    strutPivot.rotation.y = -radialAngle;
+    g.add(strutPivot);
+
+    const thrusterPivot = new THREE.Object3D();
+    thrusterPivot.position.x = r;
+    thrusterPivot.rotation.y = Math.PI / 2;
+    strutPivot.add(thrusterPivot);
+
+    const canister = edgeMesh(new THREE.CylinderGeometry(0.2, 0.2, 0.62, 14), lineColor);
+    canister.rotation.z = Math.PI / 2;
+    thrusterPivot.add(canister);
+
+    // single propeller, centered inside the canister — same pattern as the middle/duct motors
+    const orient = new THREE.Group();
+    orient.rotation.y = Math.PI / 2;
+    orient.position.x = 0;
+    const prop = makePropeller({
+      radius: 0.2, hubLen: 0.1,
+      bladeLen: 0.2 * 0.9, bladeChord: 0.045, bladeThick: 0.012
+    });
+    orient.add(prop);
+    thrusterPivot.add(orient);
+  });
+
+  g.rotation.x = 0.24; g.rotation.y = 0.62;
   const idleStep = enableDragOrbit(canvas, g, 0.003);
   stage.resize();
+
+  const PROP_SPEED = 6;
   (function animate(){
     requestAnimationFrame(animate);
-    if (!REDUCE_MOTION) idleStep();
+    if (!REDUCE_MOTION){
+      idleStep();
+      const dt = 1 / 60;
+      propellers.forEach(p => { p.rotation.z += PROP_SPEED * dt; });
+    }
     stage.renderer.render(stage.scene, stage.camera);
   })();
 })();
