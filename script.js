@@ -33,45 +33,34 @@ const modalOverlay = document.getElementById('modalOverlay');
 const modalBody = document.getElementById('modalBody');
 const modalCloseBtn = document.getElementById('modalClose');
 let modalReturn = null; // { node, parent, next } for moved (not cloned) elements
+window.__expandedWidgetId = null;
 
-function prepGalleries(root){
-  root.querySelectorAll('.proj-gallery').forEach(g => { if (!g.children.length) g.remove(); });
-}
+// A widget's own controls should work when: nothing is open, OR that widget itself
+// is the one currently expanded in the modal. They should NOT work when some other
+// widget is expanded, or the photo lightbox is open.
+window.isBlockedByOverlay = function(widgetId){
+  if (document.body.classList.contains('lightbox-open')) return true;
+  if (document.body.classList.contains('modal-open') && window.__expandedWidgetId !== widgetId) return true;
+  return false;
+};
 
-function openModalMoveFeature(title, textColEl, stageWrapEl){
+function openWidgetModal(title, stageWrapEl){
   modalReturn = { node: stageWrapEl, parent: stageWrapEl.parentNode, next: stageWrapEl.nextSibling };
+  window.__expandedWidgetId = stageWrapEl.id;
   modalBody.innerHTML = '';
   const h = document.createElement('h3');
   h.textContent = title;
   modalBody.appendChild(h);
-
-  const wrap = document.createElement('div');
-  wrap.className = 'modal-feature';
-  const textClone = textColEl.cloneNode(true);
-  prepGalleries(textClone);
-  wrap.appendChild(textClone);
-  wrap.appendChild(stageWrapEl);
-  modalBody.appendChild(wrap);
-
+  modalBody.appendChild(stageWrapEl);
   modalOverlay.hidden = false;
   document.body.classList.add('modal-open');
   requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
 }
 
-function openModalClone(cardEl){
-  modalReturn = null;
-  modalBody.innerHTML = '';
-  const clone = cardEl.cloneNode(true);
-  clone.querySelectorAll('.expand-btn').forEach(b => b.remove());
-  prepGalleries(clone);
-  modalBody.appendChild(clone);
-  modalOverlay.hidden = false;
-  document.body.classList.add('modal-open');
-}
-
 function closeModal(){
   modalOverlay.hidden = true;
   document.body.classList.remove('modal-open');
+  window.__expandedWidgetId = null;
   if (modalReturn){
     modalReturn.parent.insertBefore(modalReturn.node, modalReturn.next);
     modalReturn = null;
@@ -82,31 +71,18 @@ modalCloseBtn.addEventListener('click', closeModal);
 modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
 window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modalOverlay.hidden) closeModal(); });
 
-// wire the 4 interactive feature cards
+// wire all 5 interactive widgets — same "move the actual widget into the modal" pattern for each
 document.getElementById('dialExpand')?.addEventListener('click', () =>
-  openModalMoveFeature('Flexible Radio Transceiver', document.getElementById('dialTextCol'), document.getElementById('dialStageWrap')));
+  openWidgetModal('Flexible Radio Transceiver', document.getElementById('dialStageWrap')));
 document.getElementById('droneExpand')?.addEventListener('click', () =>
-  openModalMoveFeature('Gesture-Controlled Quadcopter Sim', document.getElementById('droneTextCol'), document.getElementById('droneStageWrap')));
+  openWidgetModal('Gesture-Controlled Quadcopter Sim', document.getElementById('droneStageWrap')));
 document.getElementById('paintExpand')?.addEventListener('click', () =>
-  openModalMoveFeature('Mini Paint', document.getElementById('paintTextCol'), document.getElementById('paintStageWrap')));
+  openWidgetModal('Mini Paint', document.getElementById('paintStageWrap')));
 document.getElementById('fighterExpand')?.addEventListener('click', () =>
-  openModalMoveFeature('Adaptive Arena Fighter', document.getElementById('fighterTextCol'), document.getElementById('fighterStageWrap')));
-document.getElementById('rovExpand')?.addEventListener('click', () => {
-  const wrap = document.getElementById('rovStageWrap');
-  modalReturn = { node: wrap, parent: wrap.parentNode, next: wrap.nextSibling };
-  modalBody.innerHTML = '';
-  const h = document.createElement('h3'); h.textContent = 'UTUX — ROV';
-  modalBody.appendChild(h);
-  modalBody.appendChild(wrap);
-  modalOverlay.hidden = false;
-  document.body.classList.add('modal-open');
-  requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
-});
+  openWidgetModal('Adaptive Arena Fighter', document.getElementById('fighterStageWrap')));
+document.getElementById('rovExpand')?.addEventListener('click', () =>
+  openWidgetModal('UTUX — ROV', document.getElementById('rovStageWrap')));
 
-// plain (non-feature) project cards
-document.querySelectorAll('.card:not(.card-feature) .expand-btn').forEach(btn => {
-  btn.addEventListener('click', () => openModalClone(btn.closest('.card')));
-});
 
 // ============================================================
 // SHARED WIREFRAME STAGE HELPERS (three.js)
@@ -382,8 +358,16 @@ function enableDragOrbit(canvas, group, idleX){
   droneGroup.rotation.y = 0.5;
   stage.resize();
 
+  const droneWrap = document.getElementById('droneStageWrap');
+  let hovering = false;
+  droneWrap?.addEventListener('pointerenter', () => { hovering = true; });
+  droneWrap?.addEventListener('pointerleave', () => { hovering = false; for (const k in keys) keys[k] = false; });
+
   const keys = {};
-  window.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; });
+  window.addEventListener('keydown', (e) => {
+    if (!hovering || window.isBlockedByOverlay('droneStageWrap')) return;
+    keys[e.key.toLowerCase()] = true;
+  });
   window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
 
   const vel = { x: 0, y: 0, z: 0 };
@@ -445,9 +429,15 @@ function enableDragOrbit(canvas, group, idleX){
   function loadScript(src){
     return new Promise((resolve, reject) => {
       const s = document.createElement('script');
-      s.src = src; s.onload = resolve; s.onerror = reject;
+      s.src = src; s.onload = resolve; s.onerror = () => reject(new Error('failed to load ' + src));
       document.head.appendChild(s);
     });
+  }
+
+  function stopStream(){
+    if (stream){ stream.getTracks().forEach(t => t.stop()); stream = null; }
+    video.classList.remove('live');
+    video.srcObject = null;
   }
 
   function onResults(results){
@@ -473,44 +463,82 @@ function enableDragOrbit(canvas, group, idleX){
 
   async function enable(){
     btn.disabled = true; btn.textContent = 'Loading…';
+
+    // Step 1: camera
     try{
       stream = await navigator.mediaDevices.getUserMedia({ video: { width: 240, height: 180 } });
       video.srcObject = stream;
       video.classList.add('live');
       await video.play();
+    } catch (err){
+      statusEl.textContent = 'camera permission denied or unavailable: ' + err.message;
+      btn.textContent = '🖐 Enable hand control';
+      btn.disabled = false;
+      stopStream();
+      return;
+    }
 
+    // Step 2: load MediaPipe Hands from CDN (only once)
+    try{
       if (!window.Hands){
+        statusEl.textContent = 'loading hand-tracking model…';
         await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');
       }
+    } catch (err){
+      statusEl.textContent = 'could not load hand-tracking library — likely blocked by an ad blocker/extension or network policy (' + err.message + ')';
+      btn.textContent = '🖐 Enable hand control';
+      btn.disabled = false;
+      stopStream();
+      return;
+    }
+
+    // Step 3: init the model
+    try{
       hands = new window.Hands({ locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}` });
       hands.setOptions({ maxNumHands: 1, modelComplexity: 0, minDetectionConfidence: 0.6, minTrackingConfidence: 0.5 });
       hands.onResults(onResults);
-
-      active = true;
-      btn.textContent = 'Disable hand control';
-      statusEl.textContent = 'starting…';
-
-      (async function loop(){
-        if (!active) return;
-        try { await hands.send({ image: video }); } catch (err) { /* ignore transient frame errors */ }
-        requestAnimationFrame(loop);
-      })();
     } catch (err){
-      statusEl.textContent = 'camera/hand tracking unavailable in this browser';
+      statusEl.textContent = 'hand-tracking init failed: ' + err.message;
       btn.textContent = '🖐 Enable hand control';
-      console.error(err);
+      btn.disabled = false;
+      stopStream();
+      return;
     }
+
+    active = true;
+    btn.textContent = 'Disable hand control';
     btn.disabled = false;
+    statusEl.textContent = 'starting…';
+
+    // Watchdog: if nothing reports back within 6s, something's silently stuck — surface it and free the camera
+    const watchdog = setTimeout(() => {
+      if (active && statusEl.textContent === 'starting…'){
+        statusEl.textContent = 'no response from hand-tracking model — try a different browser or disable ad blockers for this site';
+        disable(true);
+      }
+    }, 6000);
+
+    (async function loop(){
+      if (!active) return;
+      try {
+        await hands.send({ image: video });
+        clearTimeout(watchdog);
+      } catch (err) {
+        statusEl.textContent = 'tracking error: ' + err.message;
+        disable(true);
+        return;
+      }
+      requestAnimationFrame(loop);
+    })();
   }
 
-  function disable(){
+  function disable(keepStatus){
     active = false;
     window.__handTarget = null;
-    if (stream){ stream.getTracks().forEach(t => t.stop()); stream = null; }
-    video.classList.remove('live');
-    video.srcObject = null;
+    stopStream();
     btn.textContent = '🖐 Enable hand control';
-    statusEl.textContent = '';
+    btn.disabled = false;
+    if (!keepStatus) statusEl.textContent = '';
   }
 
   btn.addEventListener('click', () => { active ? disable() : enable(); });
@@ -650,43 +678,185 @@ function enableDragOrbit(canvas, group, idleX){
   img.src = 'assets/soldier.png';
 
   const CELL = 100, CROP_X = 28, CROP_Y = 24, CROP_W = 56, CROP_H = 42;
+  const DRAW_W = 128, DRAW_H = 96; // on-canvas sprite size (bigger — was 72x54)
   // Row mapping is a best guess from frame counts, not confirmed metadata — flag if wrong.
   const ACTIONS = {
     idle:   { row: 0, frames: 6 },
+    walk:   { row: 1, frames: 8 },
     attack: { row: 2, frames: 6 },
     shoot:  { row: 4, frames: 9 }
   };
   const FRAME_MS = 110;
+  const WALK_SPEED = 180; // px/sec (canvas is wider now, sped up to match)
+  // These margins are based on the character's actual body size, not the full
+  // drawn box (which is sized generously to fit the attack/shoot weapon reach).
+  // That's deliberate: walking should be able to get close to the edges; if an
+  // attack/shoot swing extends past the edge while near a wall, it just clips
+  // against the canvas boundary naturally (browsers do this for free) — same
+  // approach used in the original game.
+  const MARGIN_X = 34;
+  const MARGIN_Y = 26;
 
   let current = 'idle', frame = 0, playOnce = false, last = performance.now();
+  let xPos = canvas.width / 2, yPos = canvas.height / 2, facing = 1; // facing: 1 = right, -1 = left
+  let holdDirX = 0, holdDirY = 0; // -1, 0, 1 while a move button is held
+  let keyDirX = 0, keyDirY = 0;   // same, from keyboard
 
-  function setAction(name, once){ current = name; frame = 0; playOnce = !!once; }
+  function clampPos(){
+    xPos = Math.max(MARGIN_X, Math.min(canvas.width - MARGIN_X, xPos));
+    yPos = Math.max(MARGIN_Y, Math.min(canvas.height - MARGIN_Y, yPos));
+  }
 
-  document.querySelectorAll('.fighter-controls button').forEach(btn => {
-    btn.addEventListener('click', () => setAction(btn.dataset.action, true));
+  function setAction(name, once){
+    if (playOnce && !once) return; // don't let idle/walk interrupt a mid-flight attack/shoot
+    current = name; frame = 0; playOnce = !!once;
+  }
+
+  document.querySelectorAll('.fighter-controls-group button').forEach(btn => {
+    if (btn.dataset.action){
+      btn.addEventListener('click', () => setAction(btn.dataset.action, true));
+    }
+    if (btn.dataset.hold){
+      const holdMap = { left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1] };
+      const [dx, dy] = holdMap[btn.dataset.hold];
+      const start = (e) => { e.preventDefault(); holdDirX = dx; holdDirY = dy; if (dx !== 0) facing = dx; };
+      const stop = () => { holdDirX = 0; holdDirY = 0; };
+      btn.addEventListener('pointerdown', start);
+      btn.addEventListener('pointerup', stop);
+      btn.addEventListener('pointerleave', stop);
+      btn.addEventListener('pointercancel', stop);
+    }
+  });
+
+  // Optional keyboard controls — only active while the mouse is over this widget,
+  // since WASD/arrows are already claimed by the drone elsewhere on the page.
+  const stageWrap = document.getElementById('fighterStageWrap');
+  let hovering = false;
+  stageWrap?.addEventListener('pointerenter', () => { hovering = true; });
+  stageWrap?.addEventListener('pointerleave', () => { hovering = false; keyDirX = 0; keyDirY = 0; });
+
+  window.addEventListener('keydown', (e) => {
+    if (!hovering || window.isBlockedByOverlay('fighterStageWrap')) return;
+    const k = e.key.toLowerCase();
+    if (k === 'a' || k === 'arrowleft'){ keyDirX = -1; facing = -1; }
+    else if (k === 'd' || k === 'arrowright'){ keyDirX = 1; facing = 1; }
+    else if (k === 'w' || k === 'arrowup'){ keyDirY = -1; }
+    else if (k === 's' || k === 'arrowdown'){ keyDirY = 1; }
+    else if (k === 'j'){ setAction('attack', true); }
+    else if (k === 'k'){ setAction('shoot', true); }
+  });
+  window.addEventListener('keyup', (e) => {
+    const k = e.key.toLowerCase();
+    if ((k === 'a' || k === 'arrowleft') && keyDirX === -1) keyDirX = 0;
+    if ((k === 'd' || k === 'arrowright') && keyDirX === 1) keyDirX = 0;
+    if ((k === 'w' || k === 'arrowup') && keyDirY === -1) keyDirY = 0;
+    if ((k === 's' || k === 'arrowdown') && keyDirY === 1) keyDirY = 0;
   });
 
   function draw(){
     const def = ACTIONS[current] || ACTIONS.idle;
-    const sx = frame * CELL + CROP_X, sy = def.row * CELL + CROP_Y;
+    const safeFrame = frame % def.frames; // defensive: never index past this row's frame count
+    const sx = safeFrame * CELL + CROP_X, sy = def.row * CELL + CROP_Y;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (img.complete && img.naturalWidth) {
-      ctx.drawImage(img, sx, sy, CROP_W, CROP_H, 0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(xPos, yPos);
+      ctx.scale(facing, 1);
+      ctx.drawImage(img, sx, sy, CROP_W, CROP_H, -DRAW_W / 2, -DRAW_H / 2, DRAW_W, DRAW_H);
+      ctx.restore();
     }
   }
 
+  let lastFrameTime = performance.now();
   function tick(now){
     requestAnimationFrame(tick);
+    const dt = (now - lastFrameTime) / 1000;
+    lastFrameTime = now;
+
+    const moveX = holdDirX !== 0 ? holdDirX : keyDirX;
+    const moveY = holdDirY !== 0 ? holdDirY : keyDirY;
+    const moving = (moveX !== 0 || moveY !== 0);
+
+    if (moving && !playOnce){
+      xPos += moveX * WALK_SPEED * dt;
+      yPos += moveY * WALK_SPEED * dt;
+      if (current !== 'walk') setAction('walk', false);
+    } else if (!playOnce && current === 'walk'){
+      setAction('idle', false);
+    }
+    clampPos(); // always clamp, every frame, regardless of state — belt and suspenders against edge clipping
+
     if (now - last > FRAME_MS){
       last = now;
       frame++;
       const def = ACTIONS[current] || ACTIONS.idle;
       if (frame >= def.frames){
-        if (playOnce) setAction('idle', false);
-        else frame = 0;
+        if (playOnce){
+          playOnce = false; // clear first — setAction's guard would otherwise block this exact call forever
+          setAction(moving ? 'walk' : 'idle', false);
+        } else {
+          frame = 0;
+        }
       }
     }
     draw();
   }
   requestAnimationFrame(tick);
+})();
+
+// ============================================================
+// PHOTO LIGHTBOX — click any project image to view full-size, with next/prev
+// ============================================================
+(function lightbox(){
+  const overlay = document.getElementById('lightboxOverlay');
+  if (!overlay) return;
+  const imgEl = document.getElementById('lightboxImg');
+  const counterEl = document.getElementById('lightboxCounter');
+  const closeBtn = document.getElementById('lightboxClose');
+  const prevBtn = document.getElementById('lightboxPrev');
+  const nextBtn = document.getElementById('lightboxNext');
+
+  let images = [], index = 0;
+
+  function show(){
+    imgEl.src = images[index].src;
+    imgEl.alt = images[index].alt || '';
+    counterEl.textContent = (index + 1) + ' / ' + images.length;
+    const multi = images.length > 1;
+    prevBtn.style.display = multi ? '' : 'none';
+    nextBtn.style.display = multi ? '' : 'none';
+  }
+  function open(imgs, i){
+    images = imgs; index = i;
+    show();
+    overlay.hidden = false;
+    document.body.classList.add('lightbox-open');
+  }
+  function close(){
+    overlay.hidden = true;
+    document.body.classList.remove('lightbox-open');
+  }
+  function prev(){ index = (index - 1 + images.length) % images.length; show(); }
+  function next(){ index = (index + 1) % images.length; show(); }
+
+  closeBtn.addEventListener('click', close);
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+  window.addEventListener('keydown', (e) => {
+    if (overlay.hidden) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') prev();
+    if (e.key === 'ArrowRight') next();
+  });
+
+  // Event delegation: works for gallery images in the normal card layout
+  // AND for images inside a cloned gallery when a feature card is expanded.
+  document.addEventListener('click', (e) => {
+    const clicked = e.target.closest('.proj-gallery img');
+    if (!clicked) return;
+    const gallery = clicked.closest('.proj-gallery');
+    const imgs = Array.from(gallery.querySelectorAll('img'));
+    open(imgs, imgs.indexOf(clicked));
+  });
 })();

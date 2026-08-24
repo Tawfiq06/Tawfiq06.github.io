@@ -58,7 +58,7 @@
     <div class="spec-table">
       <div class="spec-row"><div class="spec-key">Languages</div><div class="spec-val">C · C++ · Python · Java · JavaScript · HTML · RISC-V Assembly</div></div>
       <div class="spec-row"><div class="spec-key">Hardware &amp; Embedded</div><div class="spec-val">Verilog · FPGA Design · Microcontrollers · Digital Logic · FSMs · I²C · UART</div></div>
-      <div class="spec-row"><div class="spec-key">Tools &amp; Software</div><div class="spec-val">Git · GitLab CI/CD · Linux · AWS (EC2, S3) · Docker · Django · Heroku · Altium Designer · Quartus Prime · ModelSim · LTSpice · Arduino · Raspberry Pi · OpenCV · MediaPipe</div></div>
+      <div class="spec-row"><div class="spec-key">Tools &amp; Software</div><div class="spec-val">Git · GitLab CI/CD · Linux · AWS (EC2, S3) · Docker · Django · Heroku · Altium Designer · Quartus Prime · ModelSim · LTSpice · OpenCV · MediaPipe</div></div>
       <div class="spec-row"><div class="spec-key">Applied</div><div class="spec-val">Problem Solving · Leadership · Technical Communication · Team Collaboration</div></div>
     </div>
   </section>
@@ -92,17 +92,21 @@
         </div>
         <div id="dialStageWrap" class="stage-box dial-compact">
           <button class="expand-btn" id="dialExpand" aria-label="Expand">⤢</button>
-          <div class="dial-wrap">
-            <svg id="dialSvg" viewBox="0 0 200 200" role="img" aria-label="Interactive frequency tuning dial"></svg>
-            <div class="oled">
-              <span id="freqOut">07.100</span>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <div class="dial-bars" id="dialBars"><span></span><span></span><span></span><span></span><span></span></div>
-                <span class="lock" id="lockOut">LOCK</span>
+          <div class="stage-main">
+            <div class="dial-wrap">
+              <svg id="dialSvg" viewBox="0 0 200 200" role="img" aria-label="Interactive frequency tuning dial"></svg>
+              <div class="oled">
+                <span id="freqOut">07.100</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="dial-bars" id="dialBars"><span></span><span></span><span></span><span></span><span></span></div>
+                  <span class="lock" id="lockOut">LOCK</span>
+                </div>
               </div>
             </div>
           </div>
-          <p class="card-caption">drag the dial — PLL: Si5351 · MCU: ATmega324PB</p>
+          <div class="stage-extra">
+            <p class="card-caption">drag the dial — PLL: Si5351 · MCU: ATmega324PB</p>
+          </div>
         </div>
       </article>
 
@@ -123,14 +127,27 @@
           </div>
           <div class="proj-gallery"></div>
         </div>
-        <div id="fighterStageWrap" class="stage-box">
+        <div id="fighterStageWrap" class="stage-box stage-split">
           <button class="expand-btn" id="fighterExpand" aria-label="Expand">⤢</button>
-          <canvas id="fighterStage" width="224" height="168"></canvas>
-          <div class="fighter-controls">
-            <button data-action="attack">Attack</button>
-            <button data-action="shoot">Shoot</button>
+          <div class="stage-main">
+            <canvas id="fighterStage" width="420" height="170"></canvas>
           </div>
-          <p class="card-caption">sprite sourced online, not original art (same sprite used in the game)</p>
+          <div class="stage-extra">
+            <div class="fighter-controls-group">
+              <div class="dpad">
+                <button data-hold="up" class="dpad-btn dpad-up">▲</button>
+                <button data-hold="left" class="dpad-btn dpad-left">◀</button>
+                <button data-hold="right" class="dpad-btn dpad-right">▶</button>
+                <button data-hold="down" class="dpad-btn dpad-down">▼</button>
+              </div>
+              <div class="action-stack">
+                <button data-action="attack" class="action-btn">Attack</button>
+                <button data-action="shoot" class="action-btn">Shoot</button>
+              </div>
+            </div>
+            <p class="drone-controls fighter-kbd-hint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move · <kbd>J</kbd> attack · <kbd>K</kbd> shoot (hover first)</p>
+            <p class="card-caption">sprite sourced online, not original art (same sprite used in the game)</p>
+          </div>
         </div>
       </article>
 
@@ -147,16 +164,22 @@
           <div class="card-tags"><span>MediaPipe</span><span>OpenCV</span><span>C++ / Python</span><span>FSM</span></div>
           <div class="proj-gallery"></div>
         </div>
-        <div id="droneStageWrap" class="stage-box">
+        <div id="droneStageWrap" class="stage-box stage-split">
           <button class="expand-btn" id="droneExpand" aria-label="Expand">⤢</button>
-          <canvas id="droneStage"></canvas>
-          <p class="drone-controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> fly · <kbd>space</kbd>/<kbd>shift</kbd> up/down</p>
-          <div class="hand-panel">
-            <button id="handToggle" class="btn-small">🖐 Enable hand control</button>
-            <video id="handVideo" width="72" height="54" muted playsinline></video>
-            <span id="handStatus" class="hand-status"></span>
+          <div class="stage-main">
+            <canvas id="droneStage"></canvas>
           </div>
-          <p class="card-caption">a browser interactive inspired by the project — the original never got a visual layer, this one's new</p>
+          <div class="stage-extra">
+            <p class="drone-controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> fly · <kbd>space</kbd>/<kbd>shift</kbd> up/down</p>
+            <div class="hand-panel">
+              <div class="hand-panel-row">
+                <button id="handToggle" class="btn-small">🖐 Enable hand control</button>
+                <video id="handVideo" width="72" height="54" muted playsinline></video>
+              </div>
+              <span id="handStatus" class="hand-status"></span>
+            </div>
+            <p class="card-caption">a browser interactive inspired by the project — the original never got a visual layer, this one's new</p>
+          </div>
         </div>
       </article>
 
@@ -181,20 +204,23 @@
         
         <div id="paintStageWrap" class="stage-box">
           <button class="expand-btn" id="paintExpand" aria-label="Expand">⤢</button>
-          <div class="paint-toolbar">
-            <button class="swatch active" data-color="#1B1A17" style="background:#1B1A17" aria-label="Ink"></button>
-            <button class="swatch" data-color="#C1440E" style="background:#C1440E" aria-label="Accent"></button>
-            <button class="paint-tool" id="paintErase">ERASE</button>
-            <button class="paint-tool" id="paintClear">CLEAR</button>
+          <div class="stage-main">
+            <div class="paint-toolbar">
+              <button class="swatch active" data-color="#1B1A17" style="background:#1B1A17" aria-label="Ink"></button>
+              <button class="swatch" data-color="#C1440E" style="background:#C1440E" aria-label="Accent"></button>
+              <button class="paint-tool" id="paintErase">ERASE</button>
+              <button class="paint-tool" id="paintClear">CLEAR</button>
+            </div>
+            <canvas id="paintCanvas" width="300" height="180"></canvas>
           </div>
-          <canvas id="paintCanvas" width="300" height="180"></canvas>
-          <p class="card-caption">draw here — a browser tribute; the original runs on an FPGA driving VGA over a PS/2 mouse</p>
+          <div class="stage-extra">
+            <p class="card-caption">draw here — a browser tribute; the original runs on an FPGA driving VGA over a PS/2 mouse</p>
+          </div>
         </div>
       </article>
 
       <!-- UTRA -->
       <article class="card">
-        <button class="expand-btn" aria-label="Expand">⤢</button>
         <div class="card-head"><h3>Autonomous Robot Car + AI Debugger</h3><span class="card-date">Feb 2026 · UTRA</span></div>
         <p class="card-sub">Obstacle-course robot with an LLM debugging co-pilot</p>
         <p class="card-desc">Mini autonomous robot car in C++ navigating an obstacle course under strict hardware constraints.</p>
@@ -209,7 +235,6 @@
 
       <!-- Tune Our Love -->
       <article class="card">
-        <button class="expand-btn" aria-label="Expand">⤢</button>
         <div class="card-head"><h3>Tune Our Love</h3><span class="card-date">Feb 2026 · MakeUofT</span></div>
         <p class="card-sub">Song-recognition hardware that reveals a hidden ring</p>
         <p class="card-desc">Arduino + Raspberry Pi song-recognition system using audio fingerprinting.</p>
@@ -242,8 +267,12 @@
       </div>
       <div id="rovStageWrap" class="stage-box">
         <button class="expand-btn" id="rovExpand" aria-label="Expand">⤢</button>
-        <canvas id="rovStage"></canvas>
-        <p class="stage-hint">drag to rotate</p>
+        <div class="stage-main">
+          <canvas id="rovStage"></canvas>
+        </div>
+        <div class="stage-extra">
+          <p class="stage-hint">drag to rotate</p>
+        </div>
       </div>
     </div>
 
@@ -315,6 +344,15 @@
     <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
     <div class="modal-body" id="modalBody"></div>
   </div>
+</div>
+
+<!-- Photo lightbox -->
+<div class="lightbox-overlay" id="lightboxOverlay" hidden>
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">✕</button>
+  <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Previous image">‹</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+  <button class="lightbox-nav next" id="lightboxNext" aria-label="Next image">›</button>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

@@ -35,6 +35,7 @@ body{
   -webkit-font-smoothing: antialiased;
 }
 body.modal-open{ overflow: hidden; }
+body.lightbox-open{ overflow: hidden; }
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior: auto; }
   *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
@@ -96,8 +97,8 @@ button{ font-family: inherit; }
 /* ============================================================
    SKILLS
    ============================================================ */
-.spec-table{ border-top: 2px solid var(--line-strong); }
-.spec-row{ display: grid; grid-template-columns: 210px 1fr; gap: 20px; padding: 15px 0; border-bottom: 1px solid var(--line); }
+.spec-table{ border-top: 0px solid var(--line-strong); }
+.spec-row{ display: grid; grid-template-columns: 210px 1fr; gap: 2px; padding: 15px 0; border-bottom: 1px solid var(--line); }
 .spec-key{ font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; color: var(--accent); text-transform: uppercase; }
 .spec-val{ color: var(--ink-dim); font-size: 14px; }
 
@@ -134,8 +135,16 @@ button{ font-family: inherit; }
 .card-caption{ font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
 
 .proj-gallery:empty{ display: none; }
-.proj-gallery{ display: grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: 8px; margin-top: 14px; }
-.proj-gallery img{ width: 100%; display: block; border: 1px solid var(--line-strong); }
+.proj-gallery{ display: grid; grid-template-columns: repeat(auto-fill, minmax(84px,1fr)); gap: 8px; margin-top: 14px; }
+.proj-gallery img{
+  width: 100%; height: 76px; display: block;
+  object-fit: contain; /* uniform footprint, never crops — letterboxes instead */
+  background: var(--panel-2);
+  border: 1px solid var(--line-strong);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.proj-gallery img:hover{ border-color: var(--accent); }
 
 .stage-box{
   position: relative;
@@ -145,6 +154,10 @@ button{ font-family: inherit; }
 }
 .stage-box canvas, .stage-box svg{ width: 100%; display: block; }
 
+/* In the compact card these wrappers are invisible to layout — children act as
+   direct children of .stage-box, so the normal card view is unchanged. */
+.stage-main, .stage-extra{ display: contents; }
+
 .expand-btn{
   position: absolute; top: 8px; right: 8px; z-index: 5;
   width: 26px; height: 26px; padding: 0;
@@ -152,7 +165,6 @@ button{ font-family: inherit; }
   cursor: pointer; font-size: 12px; line-height: 1;
 }
 .expand-btn:hover{ background: var(--accent); color: var(--bg); border-color: var(--accent); }
-.card > .expand-btn{ top: 22px; right: 22px; }
 
 /* radio dial */
 .dial-compact .dial-wrap{ max-width: 180px; margin: 0 auto; }
@@ -175,19 +187,37 @@ button{ font-family: inherit; }
 
 /* fighter sprite */
 #fighterStage{ image-rendering: pixelated; width: 100%; height: auto; background: var(--panel); border: 1px solid var(--line); }
-.fighter-controls{ display: flex; gap: 8px; margin-top: 10px; justify-content: center; }
-.fighter-controls button{ font-family: var(--mono); font-size: 10.5px; border: 1px solid var(--line-strong); background: var(--panel); padding: 6px 14px; cursor: pointer; }
-.fighter-controls button:hover{ background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+.fighter-controls-group{ display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 10px; }
+.dpad{
+  display: grid;
+  grid-template-columns: 26px 26px 26px;
+  grid-template-rows: 26px 26px 26px;
+  gap: 3px;
+}
+.dpad-btn{ font-family: var(--mono); font-size: 11px; border: 1px solid var(--line-strong); background: var(--panel); padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.dpad-btn:hover{ background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.dpad-up{ grid-column: 2; grid-row: 1; }
+.dpad-left{ grid-column: 1; grid-row: 2; }
+.dpad-right{ grid-column: 3; grid-row: 2; }
+.dpad-down{ grid-column: 2; grid-row: 3; }
+.action-stack{ display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.action-btn{ font-family: var(--mono); font-size: 10.5px; border: 1px solid var(--line-strong); background: var(--panel); padding: 7px 16px; cursor: pointer; }
+.action-btn:hover{ background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
 /* drone controls + hand control */
 .drone-controls{ font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-align: center; margin-top: 8px; }
+@media (hover: none), (max-width: 640px){
+  .fighter-kbd-hint{ display: none; } /* buttons remain — this hint only makes sense with a keyboard */
+}
 kbd{ display: inline-block; border: 1px solid var(--line-strong); padding: 1px 5px; font-family: var(--mono); font-size: 10px; margin: 0 1px; background: var(--panel); }
-.hand-panel{ display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-.btn-small{ font-family: var(--mono); font-size: 10.5px; border: 1px solid var(--line-strong); background: var(--panel); padding: 6px 10px; cursor: pointer; }
+.hand-panel{ display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 10px; }
+.hand-panel-row{ display: flex; align-items: center; justify-content: center; gap: 10px; }
+.btn-small{ font-family: var(--mono); font-size: 10.5px; border: 1px solid var(--line-strong); background: var(--panel); padding: 6px 10px; cursor: pointer; flex-shrink: 0; }
 .btn-small:hover{ background: var(--ink); color: var(--bg); }
-#handVideo{ border: 2px solid var(--line-strong); background: #000; transform: scaleX(-1); display: none; }
+#handVideo{ border: 2px solid var(--line-strong); background: #000; transform: scaleX(-1); display: none; flex-shrink: 0; }
 #handVideo.live{ display: block; }
-.hand-status{ font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.hand-status{ font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: center; min-height: 14px; max-width: 260px; }
 
 /* ============================================================
    EXPERIENCE — uniform cards
@@ -240,14 +270,46 @@ kbd{ display: inline-block; border: 1px solid var(--line-strong); padding: 1px 5
    ============================================================ */
 .modal-overlay{ position: fixed; inset: 0; z-index: 200; background: rgba(27,26,23,0.92); display: flex; align-items: center; justify-content: center; padding: 24px; }
 .modal-overlay[hidden]{ display: none; }
-.modal-panel{ position: relative; background: var(--panel); border: 2px solid var(--line-strong); width: 100%; max-width: 920px; max-height: 88vh; overflow-y: auto; padding: 30px; }
+.modal-panel{ position: relative; background: var(--panel); border: 2px solid var(--line-strong); width: 100%; max-width: 1160px; max-height: 92vh; overflow-y: auto; padding: 26px 30px; }
 .modal-close{ position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; background: var(--panel); border: 2px solid var(--line-strong); cursor: pointer; font-size: 14px; z-index: 5; }
 .modal-close:hover{ background: var(--accent); color: var(--bg); border-color: var(--accent); }
-.modal-body h3{ font-family: var(--display); font-size: 20px; text-transform: uppercase; margin-bottom: 18px; padding-right: 40px; }
-.modal-feature{ display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-.modal-feature .stage-box{ min-height: 320px; }
-@media (max-width: 720px){ .modal-feature{ grid-template-columns: 1fr; } }
+.modal-body h3{ font-family: var(--display); font-size: 18px; text-transform: uppercase; margin-bottom: 16px; padding-right: 40px; }
 .modal-body .expand-btn{ display: none; }
+
+/* Default modal layout: centered single column. The widget gets to be as big as it
+   wants, caption/hint sits below it, centered — right for widgets with only a line
+   or two of accompanying text (dial, paint, ROV), where a forced sidebar would sit
+   oddly empty next to a much taller widget. */
+.modal-body .stage-box{
+  min-height: 0;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; max-width: 620px; margin: 0 auto;
+}
+.modal-body .stage-main{ display: block; width: 100%; }
+.modal-body .stage-extra{ display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; text-align: center; }
+.modal-body .card-caption{ margin-top: 0; }
+
+/* Opt-in side-by-side for widgets with enough real sidebar content to justify it
+   (drone: flight hint + hand-control panel + caption; fighter: full control cluster).
+   THE KEY NUMBERS TO TWEAK ARE HERE:
+   - stage-main "flex: 2 ..." and "max-width" control how big the widget itself gets.
+   - stage-extra "flex: 0 0 XXXpx" is a FIXED width (doesn't grow to fill leftover
+     space) — that's what keeps the sidebar compact instead of ballooning out. */
+.modal-body .stage-box.stage-split{
+  flex-direction: row; flex-wrap: wrap; align-items: center;
+  max-width: none; margin: 0; gap: 28px; justify-content: center;
+}
+.modal-body .stage-split .stage-main{ flex: 2 1 460px; max-width: 780px; width: auto; }
+.modal-body .stage-split .stage-extra{
+  flex: 0 0 260px; width: 260px;
+  align-items: center; text-align: center;
+}
+
+@media (max-width: 900px){
+  .modal-body .stage-split{ flex-direction: column; align-items: center; }
+  .modal-body .stage-split .stage-main{ max-width: 620px; width: 100%; }
+  .modal-body .stage-split .stage-extra{ align-items: center; text-align: center; width: 100%; flex-basis: auto; }
+}
 
 /* ============================================================
    RESPONSIVE NAV
@@ -258,4 +320,21 @@ kbd{ display: inline-block; border: 1px solid var(--line-strong); padding: 1px 5
   .nav.open{ max-height: 320px; }
   .nav a{ padding: 14px var(--edge); border-bottom: 1px solid var(--line); }
   .nav-toggle{ display: flex; }
+}
+
+/* ============================================================
+   PHOTO LIGHTBOX
+   ============================================================ */
+.lightbox-overlay{ position: fixed; inset: 0; z-index: 300; background: rgba(27,26,23,0.95); display: flex; align-items: center; justify-content: center; }
+.lightbox-overlay[hidden]{ display: none; }
+.lightbox-img{ max-width: 88vw; max-height: 80vh; object-fit: contain; border: 2px solid var(--line-strong); background: var(--panel); }
+.lightbox-close{ position: absolute; top: 20px; right: 20px; width: 38px; height: 38px; background: var(--panel); border: 2px solid var(--line-strong); cursor: pointer; font-size: 16px; }
+.lightbox-nav{ position: absolute; top: 50%; transform: translateY(-50%); width: 46px; height: 46px; background: var(--panel); border: 2px solid var(--line-strong); cursor: pointer; font-size: 20px; font-family: var(--mono); }
+.lightbox-nav.prev{ left: 20px; }
+.lightbox-nav.next{ right: 20px; }
+.lightbox-nav:hover, .lightbox-close:hover{ background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.lightbox-counter{ position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; color: var(--bg); background: rgba(27,26,23,0.85); padding: 6px 12px; }
+@media (max-width: 600px){
+  .lightbox-nav{ width: 38px; height: 38px; font-size: 16px; }
+  .lightbox-close{ top: 12px; right: 12px; }
 }
